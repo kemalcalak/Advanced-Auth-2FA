@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"ts-node-dev --files src/index.ts",
-    "build":"tsc && cp ./package.json ./dist",
-    "start":"node dist/index.js"
+    "dev": "ts-node-dev --files src/index.ts",
+    "build": "tsc && cp ./package.json ./dist",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +26,7 @@
     "qrcode": "^1.5.4",
     "resend": "^4.0.1-alpha.0",
     "speakeasy": "^2.0.0",
+    "uuid": "^11.0.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
