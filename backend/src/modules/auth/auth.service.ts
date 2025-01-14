@@ -21,6 +21,8 @@ import {
   signJwtToken,
   verifyJwtToken,
 } from "../../common/utils/jwt";
+import { sendEmail } from "../../mailers/mailer";
+import { verifyEmailTemplate } from "../../mailers/template/template";
 
 export class AuthService {
 
@@ -49,6 +51,13 @@ export class AuthService {
       userId,
       type: VerificationEnum.EMAIL_VERIFICATION,
       expiresAt: fortyFiveMinutesFromNow(),
+    });
+
+    // Sending verification email link
+    const verificationUrl = `${config.APP_ORIGIN}/confirm-account?code=${verification.code}`;
+    await sendEmail({
+      to: newUser.email,
+      ...verifyEmailTemplate(verificationUrl),
     });
 
     return {
@@ -150,5 +159,36 @@ export class AuthService {
       newRefreshToken,
     };
   }
-  
+
+  public async verifyEmail(code: string) {
+    const validCode = await VerificationCodeModel.findOne({
+      code: code,
+      type: VerificationEnum.EMAIL_VERIFICATION,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!validCode) {
+      throw new BadRequestException("Invalid or expired verification code");
+    }
+
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      validCode.userId,
+      {
+        isEmailVerified: true,
+      },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw new BadRequestException(
+        "Unable to verify email address",
+        ErrorCode.VALIDATION_ERROR
+      );
+    }
+
+    await validCode.deleteOne();
+    return {
+      user: updatedUser,
+    };
+  }
 }

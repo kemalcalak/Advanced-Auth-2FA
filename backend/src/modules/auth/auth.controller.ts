@@ -1,8 +1,13 @@
 import { UnauthorizedException } from "../../common/utils/catch-errors";
-import { getAccessTokenCookieOptions, getRefreshTokenCookieOptions, setAuthenticationCookies } from "../../common/utils/cookie";
+import {
+  getAccessTokenCookieOptions,
+  getRefreshTokenCookieOptions,
+  setAuthenticationCookies,
+} from "../../common/utils/cookie";
 import {
   loginSchema,
   registerSchema,
+  verificationEmailSchema,
 } from "../../common/validators/auth.validator";
 import { HTTPSTATUS } from "../../config/http.config";
 import { asyncHandler } from "../../middlewares/asyncHandler";
@@ -41,12 +46,16 @@ export class AuthController {
         await this.authService.login(body);
 
       return setAuthenticationCookies({
-        res,accessToken,refreshToken
-      }).status(HTTPSTATUS.OK).json({
-        message: "User login successfully",
-        user,
-        mfaRequired,
-      });
+        res,
+        accessToken,
+        refreshToken,
+      })
+        .status(HTTPSTATUS.OK)
+        .json({
+          message: "User login successfully",
+          user,
+          mfaRequired,
+        });
     }
   );
 
@@ -74,6 +83,17 @@ export class AuthController {
         .json({
           message: "Refresh access token successfully",
         });
+    }
+  );
+
+  public verifyEmail = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const { code } = verificationEmailSchema.parse(req.body);
+      await this.authService.verifyEmail(code);
+
+      return res.status(HTTPSTATUS.OK).json({
+        message: "Email verified successfully",
+      });
     }
   );
 }
