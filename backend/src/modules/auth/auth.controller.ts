@@ -1,12 +1,15 @@
-import { UnauthorizedException } from "../../common/utils/catch-errors";
+import { NotFoundException, UnauthorizedException } from "../../common/utils/catch-errors";
 import {
+  clearAuthenticationCookies,
   getAccessTokenCookieOptions,
   getRefreshTokenCookieOptions,
   setAuthenticationCookies,
 } from "../../common/utils/cookie";
 import {
+  emailSchema,
   loginSchema,
   registerSchema,
+  resetPasswordSchema,
   verificationEmailSchema,
 } from "../../common/validators/auth.validator";
 import { HTTPSTATUS } from "../../config/http.config";
@@ -96,4 +99,28 @@ export class AuthController {
       });
     }
   );
+
+  public forgotPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const email = emailSchema.parse(req.body.email);
+      await this.authService.forgotPassword(email);
+
+      return res.status(HTTPSTATUS.OK).json({
+        message: "Password reset email sent",
+      });
+    }
+  );
+
+  public resetPassword = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const body = resetPasswordSchema.parse(req.body);
+
+      await this.authService.resetPassword(body);
+
+      return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+        message: "Reset Password successfully",
+      });
+    }
+  );
+
 }
