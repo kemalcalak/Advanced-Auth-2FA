@@ -44,7 +44,7 @@ A secure web application providing password reset and user authentication system
 - MongoDB
 - TypeScript
 - JWT Authentication
-- Nodemailer
+- RESEND Mail
 
 ## 📂 Project Structure
 
@@ -123,10 +123,6 @@ A secure web application providing password reset and user authentication system
 │   │   ├── auth.route.ts
 │   │   └── index.ts
 │   └── types/          # Type definitions
-├── tests/             # Test files
-│   ├── unit/
-│   └── integration/
-├── docs/             # Documentation
 └── scripts/         # Utility scripts
 ````
 
@@ -166,17 +162,20 @@ npm install
 Backend `.env`:
 ```env
 PORT=5000
+NODE_ENV=development
 MONGODB_URI=your_mongodb_uri
+APP_ORIGIN=http://localhost:3000
 JWT_SECRET=your_jwt_secret
-SMTP_HOST=your_smtp_host
-SMTP_PORT=your_smtp_port
-SMTP_USER=your_smtp_user
-SMTP_PASS=your_smtp_pass
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_SECRET=your_refresh_secret_key
+JWT_REFRESH_EXPIRES_IN=30d
+RESEND_API_KEY=your_resend_api_key
+MAILER_SENDER=onboarding@resend.dev
 ```
 
 Frontend `.env`:
 ```env
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
 ```
 
 5. Start the application:
@@ -184,12 +183,14 @@ NEXT_PUBLIC_API_URL=http://localhost:5000/api
 Backend:
 ```bash
 cd backend
+npm install
 npm run dev
 ```
 
 Frontend:
 ```bash
 cd next-frontend
+npm install
 npm run dev
 ```
 
