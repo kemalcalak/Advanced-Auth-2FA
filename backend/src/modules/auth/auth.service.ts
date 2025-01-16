@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { ErrorCode } from "../../common/enums/error-code.enum";
 import { VerificationEnum } from "../../common/enums/verification-code.enum";
-import { LoginDto, RegisterDto, resetPasswordDto } from "../../common/interface/auth.interface";
+import { LoginDto, RegisterDto, resetPasswordDto, ResetPasswordWithCodeDto } from "../../common/interface/auth.interface";
 import {
   BadRequestException,
   HttpException,
@@ -287,5 +287,62 @@ export class AuthService {
 
   public async logout(sessionId: string) {
     return await SessionModel.findByIdAndDelete(sessionId);
+  }
+
+  public async resetPasswordWithCode({ email, code, password }: ResetPasswordWithCodeDto) {
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      throw new NotFoundException("Kullanıcı bulunamadı");
+    }
+
+    const validCode = await VerificationCodeModel.findOne({
+      userId: user._id,
+      code,
+      type: VerificationEnum.PASSWORD_RESET,
+      expiresAt: { $gt: new Date() },
+    });
+
+    if (!validCode) {
+      throw new BadRequestException("Geçersiz veya süresi dolmuş kod");
+    }
+
+    const hashedPassword = await hashValue(password);
+    await UserModel.findByIdAndUpdate(user._id, { password: hashedPassword });
+    await validCode.deleteOne();
+    await SessionModel.deleteMany({ userId: user._id });
+
+    return {
+      success: true,
+      message: "Şifre başarıyla güncellendi"
+    };
+  }
+
+  public async verifyResetCode({ email, code }: { email: string; code: string }) {
+    try {
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        throw new BadRequestException("Kullanıcı bulunamadı");
+      }
+
+      const validCode = await VerificationCodeModel.findOne({
+        userId: user._id,
+        code,
+        type: VerificationEnum.PASSWORD_RESET,
+        expiresAt: { $gt: new Date() },
+      });
+
+      if (!validCode) {
+        throw new BadRequestException("Geçersiz veya süresi dolmuş kod");
+      }
+
+      return {
+        valid: true,
+        message: "Kod doğrulandı",
+        email: user.email,
+        userId: user._id
+      };
+    } catch (error) {
+      throw new BadRequestException("Kod hatalı");
+    }
   }
 }

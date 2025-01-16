@@ -4,7 +4,7 @@ import ResetPassword from "./_resetpassword";
 const Page = () => {
   return (
     <Suspense>
-      <ResetPassword />;
+      <ResetPassword />
     </Suspense>
   );
 };

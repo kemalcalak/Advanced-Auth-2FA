@@ -29,7 +29,6 @@ export default function ConfirmAccount() {
     }
     mutate(
       { code },
-
       {
         onSuccess: () => {
           toast({
@@ -67,10 +66,16 @@ export default function ConfirmAccount() {
           <Button
             disabled={isPending}
             type="submit"
-            className="w-full text-[15px] h-[40px] text-white font-semibold"
+            className="w-full text-[15px] h-[40px] text-white font-semibold bg-primary hover:bg-primary/90"
           >
-            {isPending && <Loader className="animate-spin" />}
-            Confirm account
+            {isPending ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                Confirming...
+              </>
+            ) : (
+              'Confirm account'
+            )}
           </Button>
         </form>
 

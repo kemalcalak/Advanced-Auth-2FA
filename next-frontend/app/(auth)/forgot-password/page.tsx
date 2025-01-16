@@ -4,7 +4,7 @@ import ForgotPassword from "./_forgotpassword";
 const Page = () => {
   return (
     <Suspense>
-      <ForgotPassword />;
+      <ForgotPassword />
     </Suspense>
   );
 };

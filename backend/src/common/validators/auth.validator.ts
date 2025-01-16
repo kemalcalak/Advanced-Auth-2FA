@@ -30,3 +30,9 @@ export const resetPasswordSchema = z.object({
   password: passwordSchema,
   verificationCode: verificationCodeSchema,
 });
+
+export const resetPasswordWithCodeSchema = z.object({
+  email: emailSchema,
+  code: verificationCodeSchema,
+  password: passwordSchema,
+});

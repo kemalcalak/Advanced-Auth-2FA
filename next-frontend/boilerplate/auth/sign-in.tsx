@@ -122,9 +122,6 @@ export default function Login() {
             </div>
           </form>
         </Form>
-        <Button variant="outline" className="w-full h-[40px]">
-          Email magic link
-        </Button>
         <p className="text-xs dark:text-slate- font-normal mt-7">
           By signing in, you agree to our{" "}
           <a className="text-primary hover:underline" href="#">

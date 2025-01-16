@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader, MailCheckIcon } from "lucide-react";
+import { ArrowRight, Loader, MailCheckIcon, Eye, EyeOff } from "lucide-react";
 import Logo from "@/components/logo";
 import { useMutation } from "@tanstack/react-query";
 import { registerMutationFn } from "@/lib/api";
@@ -22,6 +22,8 @@ import { toast } from "@/hooks/use-toast";
 
 export default function SignUp() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationFn: registerMutationFn,
@@ -77,13 +79,13 @@ export default function SignUp() {
     <>
       <main className="w-full min-h-[590px] h-auto max-w-full pt-10">
         {!isSubmitted ? (
-          <div className="w-full p-5 rounded-md">
+          <div className="w-full h-full p-5 rounded-md">
             <Logo />
 
             <h1 className="text-xl tracking-[-0.16px] dark:text-[#fcfdffef] font-bold mb-1.5 mt-8 text-center sm:text-left">
               Create a KemalCalak account
             </h1>
-            <p className="mb-6 text-center sm:text-left text-base dark:text-[#f1f7feb5] font-normal">
+            <p className="mb-8 text-center sm:text-left text-base dark:text-[#f1f7feb5] font-normal">
               Already have an account?{" "}
               <Link className="text-primary" href="/">
                 Sign in
@@ -140,11 +142,27 @@ export default function SignUp() {
                           Password
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="••••••••••••"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••••••"
+                              {...field}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              tabIndex={-1}
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -162,11 +180,27 @@ export default function SignUp() {
                           Confirm Password
                         </FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="••••••••••••"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="••••••••••••"
+                              {...field}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              tabIndex={-1}
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            >
+                              {showConfirmPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -174,46 +208,25 @@ export default function SignUp() {
                   />
                 </div>
                 <Button
-                  className="w-full text-[15px] h-[40px] !bg-blue-500 text-white font-semibold"
+                  className="w-full text-[15px] h-[40px] text-white font-semibold bg-primary hover:bg-primary/90"
                   disabled={isPending}
                   type="submit"
                 >
                   {isPending && <Loader className="animate-spin" />}
                   Create account
-                  <ArrowRight />
+                  <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-
-                <div className="mb-4 mt-4 flex items-center justify-center">
-                  <div
-                    aria-hidden="true"
-                    className="h-px w-full bg-[#eee] dark:bg-[#d6ebfd30]"
-                    data-orientation="horizontal"
-                    role="separator"
-                  ></div>
-                  <span className="mx-4 text-xs dark:text-[#f1f7feb5] font-normal">
-                    OR
-                  </span>
-                  <div
-                    aria-hidden="true"
-                    className="h-px w-full bg-[#eee] dark:bg-[#d6ebfd30]"
-                    data-orientation="horizontal"
-                    role="separator"
-                  ></div>
-                </div>
               </form>
             </Form>
-            <Button variant="outline" className="w-full h-[40px]">
-              Email magic link
-            </Button>
-            <p className="text-xs font-normal mt-4">
+            <p className="mt-6 text-sm text-muted-foreground dark:text-[#f1f7feb5] font-normal">
               By signing up, you agree to our{" "}
-              <a className="text-primary hover:underline" href="#">
+              <Link className="text-primary hover:underline" href="#">
                 Terms of Service
-              </a>{" "}
+              </Link>{" "}
               and{" "}
-              <a className="text-primary hover:underline" href="#">
+              <Link className="text-primary hover:underline" href="#">
                 Privacy Policy
-              </a>
+              </Link>
               .
             </p>
           </div>

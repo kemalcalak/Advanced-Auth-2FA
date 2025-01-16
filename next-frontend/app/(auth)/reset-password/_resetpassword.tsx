@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
+import { useState, useEffect } from "react";
 
 import {
   Form,
@@ -16,20 +17,27 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/logo";
-import { ArrowLeft, Frown, Loader } from "lucide-react";
+import { ArrowLeft, Frown, Loader, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { resetPasswordMutationFn } from "@/lib/api";
 import { toast } from "@/hooks/use-toast";
 
 export default function ResetPassword() {
   const router = useRouter();
-
   const params = useSearchParams();
+  
   const code = params.get("code");
+  const email = params.get("email");
   const exp = Number(params.get("exp"));
   const now = Date.now();
 
-  const isValid = code && exp && exp > now;
+  const isValid = code && email && exp && exp > now;
+
+  useEffect(() => {
+    if (!isValid) {
+      router.replace("/forgot-password");
+    }
+  }, [isValid, router]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: resetPasswordMutationFn,
@@ -37,6 +45,9 @@ export default function ResetPassword() {
 
   const formSchema = z
     .object({
+      email: z.string().trim().email({
+        message: "Please enter a valid email address",
+      }),
       password: z.string().trim().min(1, {
         message: "Password is required",
       }),
@@ -52,37 +63,48 @@ export default function ResetPassword() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      email: email || "",
       password: "",
       confirmPassword: "",
     },
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!code) {
-      router.replace("/forgot-password?email=");
+    if (!isValid) {
+      toast({
+        title: "Hata",
+        description: "Geçersiz veya süresi dolmuş kod",
+        variant: "destructive",
+      });
       return;
     }
-    const data = {
-      password: values.password,
-      verificationCode: code,
-    };
-    mutate(data, {
-      onSuccess: () => {
-        toast({
-          title: "Success",
-          description: "Password reset successfully",
-        });
-        router.replace("/");
+
+    mutate(
+      {
+        email: values.email,
+        password: values.password,
+        code: code
       },
-      onError: (error) => {
-        console.log(error);
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
+      {
+        onSuccess: () => {
+          toast({
+            title: "Başarılı",
+            description: "Şifreniz başarıyla değiştirildi",
+          });
+          router.replace("/login");
+        },
+        onError: (error) => {
+          toast({
+            title: "Hata",
+            description: error.message || "Şifre değiştirilemedi",
+            variant: "destructive",
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -108,6 +130,27 @@ export default function ResetPassword() {
               <div className="mb-0">
                 <FormField
                   control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="dark:text-[#f1f7feb5] text-sm">
+                        Email
+                      </FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="email"
+                          placeholder="Enter your email" 
+                          {...field} 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="mb-0">
+                <FormField
+                  control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
@@ -115,7 +158,27 @@ export default function ResetPassword() {
                         New password
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your password" {...field} />
+                        <div className="relative">
+                          <Input 
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter your password" 
+                            {...field} 
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            tabIndex={-1}
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -132,10 +195,27 @@ export default function ResetPassword() {
                         Confirm new password
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter your password again"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <Input 
+                            type={showConfirmPassword ? "text" : "password"}
+                            placeholder="Enter your password again" 
+                            {...field} 
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            tabIndex={-1}
+                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          >
+                            {showConfirmPassword ? (
+                              <EyeOff className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <Eye className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </Button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

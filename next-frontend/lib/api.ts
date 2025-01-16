@@ -39,6 +39,23 @@ export type mfaType = {
   qrImageUrl: string;
 };
 
+type resetPasswordWithCodeType = {
+  email: string;
+  password: string;
+  code: string;
+};
+
+type verifyResetCodeType = {
+  email: string;
+  code: string;
+};
+
+type VerifyResetCodeResponse = {
+  valid: boolean;
+  message: string;
+  email: string;
+};
+
 export const loginMutationFn = async (data: LoginType) =>
   await API.post("/auth/login", data);
 
@@ -51,8 +68,8 @@ export const verifyEmailMutationFn = async (data: verifyEmailType) =>
 export const forgotPasswordMutationFn = async (data: forgotPasswordType) =>
   await API.post(`/auth/password/forgot`, data);
 
-export const resetPasswordMutationFn = async (data: resetPasswordType) =>
-  await API.post(`/auth/password/reset`, data);
+export const resetPasswordMutationFn = async (data: resetPasswordWithCodeType) =>
+  await API.post(`/auth/password/reset-with-code`, data);
 
 export const verifyMFALoginMutationFn = async (data: mfaLoginType) =>
   await API.post(`/mfa/verify-login`, data);
@@ -78,3 +95,11 @@ export const sessionsQueryFn = async () => {
 
 export const sessionDelMutationFn = async (id: string) =>
   await API.delete(`/session/${id}`);
+
+export const resetPasswordWithCodeMutationFn = async (data: resetPasswordWithCodeType) =>
+  await API.post(`/auth/password/reset-with-code`, data);
+
+export const verifyResetCodeMutationFn = async (data: verifyResetCodeType) => {
+  const response = await API.post<VerifyResetCodeResponse>(`/auth/verify-reset-code`, data);
+  return response.data;
+};

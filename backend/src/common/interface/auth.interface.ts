@@ -16,3 +16,10 @@ export interface resetPasswordDto {
   password: string;
   verificationCode: string;
 }
+
+export interface ResetPasswordWithCodeDto {
+  email: string;
+  code: string;
+  password: string;
+}
+

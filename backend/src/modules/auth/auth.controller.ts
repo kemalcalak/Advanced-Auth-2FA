@@ -11,6 +11,7 @@ import {
   registerSchema,
   resetPasswordSchema,
   verificationEmailSchema,
+  resetPasswordWithCodeSchema,
 } from "../../common/validators/auth.validator";
 import { HTTPSTATUS } from "../../config/http.config";
 import { asyncHandler } from "../../middlewares/asyncHandler";
@@ -135,4 +136,27 @@ export class AuthController {
       });
     }
   );
+
+  public resetPasswordWithCode = asyncHandler(
+    async (req: Request, res: Response): Promise<any> => {
+      const body = resetPasswordWithCodeSchema.parse(req.body);
+      await this.authService.resetPasswordWithCode(body);
+
+      return clearAuthenticationCookies(res).status(HTTPSTATUS.OK).json({
+        message: "Password reset successfully",
+      });
+    }
+  );
+
+  public verifyResetCode = asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const result = await this.authService.verifyResetCode(req.body);
+      return res.status(HTTPSTATUS.OK).json(result);
+    } catch (error: any) {
+      return res.status(HTTPSTATUS.BAD_REQUEST).json({
+        valid: false,
+        message: error.message || "Doğrulama hatası"
+      });
+    }
+  });
 }

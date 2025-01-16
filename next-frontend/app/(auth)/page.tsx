@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ArrowRight, Loader } from "lucide-react";
+import { ArrowRight, Loader, Eye, EyeOff } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import Link from "next/link";
@@ -19,6 +19,7 @@ import Logo from "@/components/logo";
 import { loginMutationFn } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function Login() {
   const router = useRouter();
@@ -42,6 +43,8 @@ export default function Login() {
       password: "",
     },
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     mutate(values, {
@@ -106,7 +109,27 @@ export default function Login() {
                       Password
                     </FormLabel>
                     <FormControl>
-                      <Input placeholder="••••••••••••" {...field} />
+                      <div className="relative">
+                        <Input 
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••••••" 
+                          {...field} 
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          tabIndex={-1}
+                          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -128,40 +151,19 @@ export default function Login() {
             >
               {isPending && <Loader className="animate-spin" />}
               Sign in
-              <ArrowRight />
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
-
-            <div className="mb-6 mt-6 flex items-center justify-center">
-              <div
-                aria-hidden="true"
-                className="h-px w-full bg-[#eee] dark:bg-[#d6ebfd30]"
-                data-orientation="horizontal"
-                role="separator"
-              ></div>
-              <span className="mx-4 text-xs dark:text-[#f1f7feb5] font-normal">
-                OR
-              </span>
-              <div
-                aria-hidden="true"
-                className="h-px w-full bg-[#eee] dark:bg-[#d6ebfd30]"
-                data-orientation="horizontal"
-                role="separator"
-              ></div>
-            </div>
           </form>
         </Form>
-        <Button variant="outline" className="w-full h-[40px]">
-          Email magic link
-        </Button>
-        <p className="text-xs dark:text-slate- font-normal mt-7">
+        <p className="mt-6 text-sm text-muted-foreground dark:text-[#f1f7feb5] font-normal">
           By signing in, you agree to our{" "}
-          <a className="text-primary hover:underline" href="#">
+          <Link className="text-primary hover:underline" href="#">
             Terms of Service
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a className="text-primary hover:underline" href="#">
+          <Link className="text-primary hover:underline" href="#">
             Privacy Policy
-          </a>
+          </Link>
           .
         </p>
       </div>
