@@ -135,8 +135,6 @@ This structure follows:
 - Testing support
 - Development tools integration
 
-Each directory contains a `README.md` explaining its purpose and conventions.
-
 
 ## 📦 Installation
 
