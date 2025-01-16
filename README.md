@@ -4,7 +4,7 @@ A secure web application providing password reset and user authentication system
 
 <div style="display: flex; flex-direction: row; justify-content: center; gap: 20px; margin: 40px 0;">
   <img src="https://res.cloudinary.com/dkqu2s9gz/image/upload/v1737040650/x6fucj6hhz45mjfkxy5p.png" alt="Project Screenshot 1" width="300">
-  <img src="https://res.cloudinary.com/dkqu2s9gz/image/upload/v1737040651/dbi2owasiidesjxpzfij.png" alt="Project Screenshot 2" width="300">
+  <img src="https://res.cloudinary.com/dkqu2s9gz/image/upload/v1737040651/dbi2owasiidesjxpzfij.png" alt="Project Screenshot 2" width="420">
 </div>
 
 ## 🚀 Features
