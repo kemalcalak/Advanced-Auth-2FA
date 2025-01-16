@@ -181,14 +181,12 @@ NEXT_PUBLIC_API_URL=http://localhost:5000/api/v1
 Backend:
 ```bash
 cd backend
-npm install
 npm run dev
 ```
 
 Frontend:
 ```bash
 cd next-frontend
-npm install
 npm run dev
 ```
 
